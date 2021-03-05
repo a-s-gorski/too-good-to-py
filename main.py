@@ -38,49 +38,51 @@ class MainScreen(GridLayout):
         self.shop_list = [None for _ in range(10)]
         self.price_list = [None for _ in range(10)]
         self.address_list = [None for _ in range(10)]
+        self.Offers = [[Label(text="") for _ in range(6)] for _ in range(10)]
 
-        self.loginLabel = Label(text="login")
+        self.loginLabel = Label(text="log")
         self.loginTextInput = TextInput(text=self.login)
 
-        self.passwordLabel = Label(text="password")
+        self.passwordLabel = Label(text="pass")
         self.passwordTextInput = TextInput(text=self.password)
 
-        self.loginTGTG = Button(text="login to TgTg")
+        self.loginTGTG = Button(text="login")
 
+        self.SetParamsLabel = Label(text="set \n params")
+        self.DisplayParams = Label(text="params ")
 
-        self.SetParamsLabel = Label(text="set your params")
-        self.DisplayParams = Label(text="params display")
-
-        self.LatitudeLabel = Label(text="latitude")
+        self.LatitudeLabel = Label(text="lat.")
         self.LatitudeTextField = TextInput(text="lat")
         self.LatitudeDisplay = Label(text=self.latitude)
 
-        self.LongitudeLabel = Label(text="longitude")
+        self.LongitudeLabel = Label(text="long.")
         self.LongitudeTextFiled = TextInput(text="long")
         self.LongitudeDisplay = Label(text=self.longitude)
 
-        self.MaxPriceLabel = Label(text="max price")
+        self.MaxPriceLabel = Label(text="max \n price")
         self.MaxPriceTextField = TextInput(text="100")
         self.MaxPriceDisplay = Label(text=self.max_price)
 
-        self.MaxDistanceLabel = Label(text="max distance(km)")
+        self.MaxDistanceLabel = Label(text="max \n dist(km)")
         self.MaxDistanceTextField = TextInput(text="10.0")
         self.MaxDistanceDisplay = Label(text=self.max_distance)
 
-        self.SearchPatternsLabel = Label(text="Search patterns")
+        self.SearchPatternsLabel = Label(text="Src \n patt")
         self.SearchPatternsTextField = TextInput(text="pizza, kawa")
         self.SearchPatternsDisplay = Label(text=self.searched_patterns)
 
-        self.SetParamsButton = Button(text="setParams")
+        self.SetParamsButton = Button(text="set \n Params")
         self.SetParamsButton.bind(on_press=self.pressed_params_button)
 
-        self.OffersNumberLabel = Label(text="offer_id")
-        self.DistanceLabel = Label(text="distance(km)")
+        self.OffersNumberLabel = Label(text="id")
+        self.DistanceLabel = Label(text="dist \n (km)")
         self.ShopLabel = Label(text="shop")
         self.PriceLabel = Label(text="price")
-        self.AddressLabel = Label(text="address")
+        self.AddressLabel = Label(text="addr")
+        self.NameLabel = Label(text="name")
 
         self.create_gui()
+        self.update_offers([["10", "ikea", "10", "10", "10"], ["100", "tyskie", "123", "34", "6"], []]) # example how to use update offers
 
     def add_login_widgets(self):
         self.add_widget(self.loginLabel)
@@ -129,13 +131,17 @@ class MainScreen(GridLayout):
     def add_offers_widgets(self):
         self.add_offers_labels()
 
-
     def add_offers_labels(self):
         self.add_widget(self.OffersNumberLabel)
         self.add_widget(self.DistanceLabel)
         self.add_widget(self.ShopLabel)
         self.add_widget(self.PriceLabel)
         self.add_widget(self.AddressLabel)
+        self.add_widget(self.NameLabel)
+        for i in range(10):
+            self.Offers[i][0].text = str(self.offer_id_list[i])
+            for j in range(6):
+                self.add_widget(self.Offers[i][j])
 
     def create_gui(self):
         self.add_login_widgets()
@@ -187,9 +193,12 @@ class MainScreen(GridLayout):
             except Exception:
                 pass
 
-
-
-
+    def update_offers(self, offers):
+        for counter, offer in enumerate(offers):
+            if counter >= 10 or len(offer) != 5:
+                continue
+            for i in range(1, 6):
+                self.Offers[counter][i].text = str(offer[i-1])
 
 
 class MyApp(App):
