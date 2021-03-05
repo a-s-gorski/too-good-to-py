@@ -46,10 +46,13 @@ class MainScreen(GridLayout):
         self.MaxPriceDisplay = Label(text="not set yet")
         self.MaxDistanceLabel = TextInput(text="max distance(km)")
         self.MaxDistanceTextField = TextInput(text="10.0")
-        self.MaxDistanceLabel = Label(text="not set yet")
+        self.MaxDistanceDisplay = Label(text="not set yet")
         self.SearchPatternsLabel = Label(text="Search patterns")
         self.SearchPatternsTextField = TextInput(text="pizza, kawa")
         self.SearchPatternsDisplay = Label(text="notsetyet")
+        self.SetParamsButton = Button(text="setParams")
+
+
 
         self.createGui()
 
@@ -64,8 +67,46 @@ class MainScreen(GridLayout):
         for i in range(3):
             self.add_widget(Label())
 
+    def add_param_widgets(self):
+        self.add_widget(self.SetParamsLabel)
+        self.add_widget(Label())
+        self.add_widget(self.DisplayParams)
+        for i in range(3):
+            self.add_widget(Label())
+        self.add_widget(self.LatitudeLabel)
+        self.add_widget(self.LatitudeTextField)
+        self.add_widget(self.LatitudeDisplay)
+        for i in range(3):
+            self.add_widget(Label())
+        self.add_widget(self.LongitudeLabel)
+        self.add_widget(self.LongitudeTextFiled)
+        self.add_widget(self.LongitudeDisplay)
+        for i in range(3):
+            self.add_widget(Label())
+        self.add_widget(self.MaxPriceLabel)
+        self.add_widget(self.MaxPriceTextField)
+        self.add_widget(self.MaxPriceDisplay)
+        for i in range(3):
+            self.add_widget(Label())
+        self.add_widget(self.MaxDistanceLabel)
+        self.add_widget(self.MaxDistanceTextField)
+        self.add_widget(self.MaxDistanceDisplay)
+        for i in range(3):
+            self.add_widget(Label())
+        self.add_widget(self.SearchPatternsLabel)
+        self.add_widget(self.SearchPatternsTextField)
+        self.add_widget(self.SearchPatternsDisplay)
+        self.add_widget(self.SetParamsButton)
+        for i in range(2):
+            self.add_widget(Label())
+
+
+
+
+
     def createGui(self):
         self.add_login_widgets()
+        self.add_param_widgets()
 
 
 
