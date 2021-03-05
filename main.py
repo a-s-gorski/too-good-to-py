@@ -10,6 +10,9 @@ from kivy.uix.label import Label
 from kivy.uix.pagelayout import PageLayout
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.textinput import TextInput
+import tgtg
+import requests
+import haversine
 
 
 class MainScreen(GridLayout):
@@ -31,6 +34,7 @@ class MainScreen(GridLayout):
         self.longitude = str(21.01)
         self.max_price = str(100)
         self.max_distance = str(10)
+        self.loginSuccessful = False
         self.selected_offers = []
         self.searched_patterns = ""
         self.offer_id_list = [i for i in range(1, 11)]
@@ -42,11 +46,14 @@ class MainScreen(GridLayout):
 
         self.loginLabel = Label(text="log")
         self.loginTextInput = TextInput(text=self.login)
+        self.loginStatusLabel = Label(text="login \n status")
+        self.loginStatusDisplay = Label(text=str(self.loginSuccessful))
 
         self.passwordLabel = Label(text="pass")
         self.passwordTextInput = TextInput(text=self.password)
 
         self.loginTGTG = Button(text="login")
+        self.loginTGTG.bind(on_press=self.login_button_pressed)
 
         self.SetParamsLabel = Label(text="set \n params")
         self.DisplayParams = Label(text="params ")
@@ -82,12 +89,15 @@ class MainScreen(GridLayout):
         self.NameLabel = Label(text="name")
 
         self.create_gui()
-        self.update_offers([["10", "ikea", "10", "10", "10"], ["100", "tyskie", "123", "34", "6"], []]) # example how to use update offers
+        self.update_offers([["10", "ikea", "10", "10", "10"], ["100", "tyskie", "123", "34", "6"],
+                            []])  # example how to use update offers
 
     def add_login_widgets(self):
         self.add_widget(self.loginLabel)
         self.add_widget(self.loginTextInput)
-        for i in range(4):
+        self.add_widget(self.loginStatusLabel)
+        self.add_widget(self.loginStatusDisplay)
+        for i in range(2):
             self.add_widget(Label())
         self.add_widget(self.passwordLabel)
         self.add_widget(self.passwordTextInput)
@@ -198,7 +208,21 @@ class MainScreen(GridLayout):
             if counter >= 10 or len(offer) != 5:
                 continue
             for i in range(1, 6):
-                self.Offers[counter][i].text = str(offer[i-1])
+                self.Offers[counter][i].text = str(offer[i - 1])
+
+    def login_button_pressed(self, btn):  # right now nothing more than skeleton for the future
+        try:
+            self.loginStatusDisplay.text = "True"
+            request = requests.get("http://www.kite.com", timeout=0.5)
+
+            # define client
+            # move on
+            # here will be loging function
+            # later add custom button for searching offers
+            # and move here classes from backend
+        except Exception:  # add custom tgtgApiException
+            self.loginStatusDisplay.text = "False"
+
 
 
 class MyApp(App):
