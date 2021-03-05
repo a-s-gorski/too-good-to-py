@@ -1,6 +1,7 @@
 import kivy
 
 from kivy.app import App
+from kivy.properties import StringProperty
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
@@ -16,6 +17,13 @@ class MainScreen(GridLayout):
         super(MainScreen, self).__init__(**kwargs)
 
         self.cols = 6
+        self.login = StringProperty()
+        self.password = StringProperty()
+        self.latitude = StringProperty()
+        self.longitude = StringProperty()
+        self.max_price = StringProperty()
+        self.max_distance = StringProperty()
+        self.searched_patterns = StringProperty()
 
         self.login = "default-none"
         self.password = "default-none"
@@ -36,7 +44,9 @@ class MainScreen(GridLayout):
 
         self.passwordLabel = Label(text="password")
         self.passwordTextInput = TextInput(text=self.password)
+
         self.loginTGTG = Button(text="login to TgTg")
+
 
         self.SetParamsLabel = Label(text="set your params")
         self.DisplayParams = Label(text="params display")
@@ -55,13 +65,14 @@ class MainScreen(GridLayout):
 
         self.MaxDistanceLabel = Label(text="max distance(km)")
         self.MaxDistanceTextField = TextInput(text="10.0")
-        self.MaxDistanceDisplay = Label(text=self.max_price)
+        self.MaxDistanceDisplay = Label(text=self.max_distance)
 
         self.SearchPatternsLabel = Label(text="Search patterns")
         self.SearchPatternsTextField = TextInput(text="pizza, kawa")
         self.SearchPatternsDisplay = Label(text=self.searched_patterns)
 
         self.SetParamsButton = Button(text="setParams")
+        self.SetParamsButton.bind(on_press=self.pressed_params_button)
 
         self.OffersNumberLabel = Label(text="offer_id")
         self.DistanceLabel = Label(text="distance(km)")
@@ -130,6 +141,55 @@ class MainScreen(GridLayout):
         self.add_login_widgets()
         self.add_param_widgets()
         self.add_offers_widgets()
+
+    def pressed_params_button(self, btn):
+        latitude_input = str(self.LatitudeTextField.text)
+        longitude_input = str(self.LongitudeTextFiled.text)
+        max_price_input = str(self.MaxPriceTextField.text)
+        max_distance_input = str(self.MaxDistanceTextField.text)
+        search_patterns_input = str(self.SearchPatternsTextField.text)
+        print("hello")
+        print(self.latitude)
+
+        if 0 < len(latitude_input) < 10:
+            try:
+                latitude_input = float(latitude_input)
+                self.latitude = latitude_input
+                # self.LatitudeDisplay.text = self.latitude
+            except ValueError:
+                pass
+        if 0 < len(longitude_input) < 10:
+            try:
+                longitude_input = float(longitude_input)
+                self.longitude = longitude_input
+                self.LongitudeDisplay.text = str(self.longitude)
+            except ValueError:
+                pass
+        if 0 < len(max_price_input) < 10:
+            try:
+                max_price_input = int(max_price_input)
+                self.max_price = max_price_input
+                self.MaxPriceDisplay.text = str(self.max_price)
+            except ValueError:
+                pass
+        if 0 < len(max_distance_input) < 5:
+            try:
+                max_distance_input = int(max_distance_input)
+                self.max_distance = max_distance_input
+                self.MaxDistanceDisplay.text = str(self.max_distance)
+            except ValueError:
+                pass
+        if 0 < len(search_patterns_input) < 100:
+            try:
+                search_patterns_test = search_patterns_input.split(",")
+                self.searched_patterns = search_patterns_input
+                self.SearchPatternsDisplay.text = str(self.searched_patterns)
+            except Exception:
+                pass
+
+
+
+
 
 
 class MyApp(App):
