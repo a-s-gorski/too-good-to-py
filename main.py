@@ -34,6 +34,9 @@ class User:
         self.radius = radius
         self.client = None
 
+    def getLocation(self):
+        return (self.longtitude, self.latitude)
+
     def select_offers(self):
         self.client = TgtgClient(email=self.login, password=self.password)
         items = []
@@ -61,16 +64,9 @@ class OfferCommand:
         self.offer_name = item['item']['name']
         self.offer_desc = item['item']['description']
         self.items_available = item['items_available']
-        self.address = None
-        self.shop = None
+        self.address = item['pickup_location']['address']['address_line']
+        self.shop = item['store']['store_name']
 
-        # purchase_end_time = item['purchase_end']
-        # purchase_end_time = ''.join(
-        #     i for i in purchase_end_time if i.isdigit() or i == "-" or i == ":")
-        # purchase_end_time = datetime.datetime.strptime(
-        #     purchase_end_time, "%Y-%m-%d%H:%M:%S")
-
-        # self.purchase_end = purchase_end_time
 
     def getPrice(self):
         return self.price
@@ -102,13 +98,10 @@ class OfferCommand:
     def getMinutesLeft(self):
         (self.purchase_end - datetime.datetime.now()).total_seconds() / 60
 
-    def getOffer(self):
-        offer_result = []
-        offer_result.append(self.getDistance())
-        offer_result.append(self.getName())
-        offer_result.append(self.getPrice())
-        offer_result.append(self.getAddr())
-        offer_result.append(self.getName())
+    def getOffer(self, user):
+
+        offer_result = [self.getDistance(user.getLocation()), self.getShop(), self.getPrice(), self.getAddress(), self.getName()]
+        return offer_result
 
 
 class OfferSelector:
@@ -177,8 +170,11 @@ class OfferSelector:
                 print(offer.getDistance(current_location=self.location))
         print("----", len(self.selected_offers))
 
-    def get_selected_offers(self):
-        return self.selected_offers
+    def get_selected_offers(self, user):
+        result_offers = [offer.getOffer(user) for offer in self.selected_offers]
+        # for r in result_offers:
+        #     print(len(r))
+        return result_offers
 
 
 # activity_port = 3001      for future development of background services
@@ -209,8 +205,8 @@ class MainScreen(GridLayout):
         self.max_distance = StringProperty()
         self.searched_patterns = StringProperty()
 
-        self.login = "default-none"
-        self.password = "default-none"
+        self.login = "adamsebastiangorski@gmail.com"
+        self.password = "cotomoisa1"
         self.latitude = str(52.23)
         self.longitude = str(21.01)
         self.max_price = str(100)
@@ -256,7 +252,7 @@ class MainScreen(GridLayout):
         self.MaxDistanceDisplay = Label(text=self.max_distance)
 
         self.SearchPatternsLabel = Label(text="Src \n patt")
-        self.SearchPatternsTextField = TextInput(text="pizza, kawa")
+        self.SearchPatternsTextField = TextInput(text=",")
         self.SearchPatternsDisplay = Label(text=self.searched_patterns)
 
         self.SetParamsButton = Button(text="set \n Params")
@@ -389,7 +385,7 @@ class MainScreen(GridLayout):
             if counter >= 10 or len(offer) != 5:
                 continue
             for i in range(1, 6):
-                self.Offers[counter][i].text = str(offer[i - 1])
+                self.Offers[counter][i].text = str(offer[i - 1])[:10]
 
     def login_button_pressed(self, btn):  # right now nothing more than skeleton for the future
         try:
@@ -401,8 +397,12 @@ class MainScreen(GridLayout):
             print(current_user.password)
             offer_selector = OfferSelector()
             offer_selector.select_offers(current_user)
-            selected_offers = offer_selector.get_selected_offers()
-            print(selected_offers)
+            offers_to_display = offer_selector.get_selected_offers(current_user)
+            # print(offers_to_display[0])
+            # print(len(offers_to_display))
+            new_offers_list = [offer for offer in offers_to_display if len(offer) == 5]
+            new_offers_list = sorted(new_offers_list, key=lambda x:x[0])
+            self.update_offers(new_offers_list)
 
 
         except Exception as e:  # add custom tgtgApiException
