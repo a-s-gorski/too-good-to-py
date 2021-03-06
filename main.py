@@ -119,8 +119,7 @@ class MainScreen(GridLayout):
         for i in range(3):
             self.add_widget(Label())
         self.add_widget(self.LongitudeLabel)
-        self.add_widget(self.LongitudeTextFiled)
-        self.add_widget(self.LongitudeDisplay)
+        self.add_widget(self.LongitudeTextFiled) 
         for i in range(3):
             self.add_widget(Label())
         self.add_widget(self.MaxPriceLabel)
