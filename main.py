@@ -16,29 +16,169 @@ from kivy.uix.label import Label
 from kivy.uix.pagelayout import PageLayout
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.textinput import TextInput
-import tgtg
+from tgtg import TgtgClient
 import requests
-import haversine
+import haversine as hs
 from kivy.utils import platform
 from kivy.clock import Clock
+import math
+import datetime
+import string
 
-activity_port = 3001
-service_port = 3000
 
+class User:
+    def __init__(self, login, password, latitude, longtitude, radius):
+        self.login = login
+        self.password = password
+        self.latitude = latitude
+        self.longtitude = longtitude
+        self.radius = radius
+        self.client = None
+
+    def select_offers(self):
+        self.client = TgtgClient(email=self.login, password=self.password)
+        items = []
+        values = [i / 50 for i in range(-6, 7)]
+        for x in values:
+            for y in values:
+                items.extend(self.client.get_items(
+                    favorites_only=False,
+                    latitude=self.latitude + x,
+                    longitude=self.longtitude + y, radius=1000))
+        # print(items[0])
+
+        print("items")
+        print(len(items))
+
+        return items
+
+
+class OfferCommand:
+    def __init__(self, item):
+        self.price = item['item']['price']['minor_units'] / \
+                     math.pow(10, item['item']['price']['decimals'])
+        self.location = (item['pickup_location']['location']['longitude'],
+                         item['pickup_location']['location']['latitude'])
+        self.offer_name = item['item']['name']
+        self.offer_desc = item['item']['description']
+        self.items_available = item['items_available']
+
+        # purchase_end_time = item['purchase_end']
+        # purchase_end_time = ''.join(
+        #     i for i in purchase_end_time if i.isdigit() or i == "-" or i == ":")
+        # purchase_end_time = datetime.datetime.strptime(
+        #     purchase_end_time, "%Y-%m-%d%H:%M:%S")
+
+        # self.purchase_end = purchase_end_time
+
+    def getPrice(self):
+        return self.price
+
+    def getLocation(self):
+        return self.location
+
+    def getItemsAvailable(self):
+        return self.items_available
+
+    def getDistance(self, current_location):
+        return hs.haversine(self.location, current_location, unit=hs.Unit.METERS) / 1000
+
+    def getName(self):
+        return self.offer_name
+
+    def getDescription(self):
+        return self.offer_desc
+
+    # def getPurchaseEnd(self):
+    #     return self.purchase_end
+
+    def getMinutesLeft(self):
+        (self.purchase_end - datetime.datetime.now()).total_seconds() / 60
+
+
+class OfferSelector:
+    def __init__(self, lattitude=21.02541225356079, longtitude=52.24983889785303, max_distance=5, searched_patterns=[],
+                 max_price=50):
+        self.location = (lattitude, longtitude)
+        self.max_distance = max_distance
+        self.searched_patterns = searched_patterns
+        self.max_price = max_price
+        self.selected_offers = []
+
+    def set_max_price(self, max_price):
+        self.max_price = max_price
+
+    def set_max_distance(self, max_distance):
+        self.max_distance = max_distance
+
+    def set_searched_patterns(self, searched_patterns):
+        self.searched_patterns = searched_patterns
+
+    def check_max_distance(self, offer):
+        return self.max_distance >= offer.getDistance(self.location)
+
+    def check_max_price(self, offer):
+        return self.max_price >= offer.getPrice()
+
+    def check_items_available(self, offer):
+        return offer.getItemsAvailable() > 0
+
+    def search_patterns(self, offer):
+        if not self.searched_patterns or len(self.searched_patterns) == 0:
+            return True
+
+        title = offer.getName()
+        description = offer.getDescription()
+        for pattern in self.searched_patterns:
+            if pattern in title or pattern in description:
+                return True
+        return False
+
+    def check_offer(self, offer):
+        try:
+            if not self.check_max_distance(offer):
+                return False
+            if not self.check_max_price(offer):
+                return False
+            if not self.check_items_available(offer):
+                return False
+            return self.search_patterns(offer)
+        except:
+            print("ERROR or something, idk")
+            return False
+
+    def select_offers(self, user):
+        items = user.select_offers()
+        print(len(items))
+
+        for item in items:
+            offer = OfferCommand(item)
+            if self.check_offer(offer):
+                self.selected_offers.append(offer)
+                # print(offer.getDistance(current_location=self.location))
+
+    def get_selected_offers(self):
+        return self.selected_offers
+
+
+
+# activity_port = 3001      for future development of background services
+# service_port = 3000
+#
 
 
 class MainScreen(GridLayout):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
-        if platform=='android':
-            from android import AndroidService
-            service = AndroidService('my pong service', 'running')
-            service.start('service started')
-            self.service = service
-        osc = OSCThreadServer()
-        sock = osc.listen(address='127.0.0.1', port=activity_port)
-        osc.bind(sock, self.some_api_callback, '/some_api')
-        Clock.schedule_interval(lambda *x: osc.readQueue(sock), 0)
+        # if platform=='android':
+        #     from android import AndroidService
+        #     service = AndroidService('my pong service', 'running')
+        #     service.start('service started')
+        #     self.service = service
+        # osc = OSCThreadServer()
+        # sock = osc.listen(address='127.0.0.1', port=activity_port)
+        # osc.bind(sock, self.some_api_callback, '/some_api')
+        # Clock.schedule_interval(lambda *x: osc.readQueue(sock), 0)
 
 
         self.service = None
@@ -235,26 +375,22 @@ class MainScreen(GridLayout):
     def login_button_pressed(self, btn):  # right now nothing more than skeleton for the future
         try:
             self.loginStatusDisplay.text = "True"
-            request = requests.get("http://www.kite.com", timeout=0.5)
-            plyer.notification.notify(title="title", message="msg")
-            print("success")
+            current_user = User(str(self.login), str(self.password), float(self.latitude), float(self.longitude), 10000)
+            offer_selector = OfferSelector()
+            selected_offers = offer_selector.select_offers(current_user)
+            print(selected_offers)
 
-            # define client
-            # move on
-            # here will be loging function
-            # later add custom button for searching offers
-            # and move here classes from backend
         except Exception:  # add custom tgtgApiException
             self.loginStatusDisplay.text = "False"
             print("failure")
 
-    def some_api_callback(self, message, *args):
-        return
+    # def some_api_callback(self, message, *args):
+    #     return
 
 
 
-    def ping(self):
-        osc.sendMsg('/some_api', ['ping', ], port=someotherport)
+    # def ping(self):
+    #     osc.sendMsg('/some_api', ['ping', ], port=someotherport)
 
 
 
