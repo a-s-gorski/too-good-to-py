@@ -1,6 +1,7 @@
 
 import kivy
-
+import jnius
+import plyer
 from kivy.app import App
 from kivy.properties import StringProperty
 from kivy.uix.button import Button
@@ -215,6 +216,7 @@ class MainScreen(GridLayout):
         try:
             self.loginStatusDisplay.text = "True"
             request = requests.get("http://www.kite.com", timeout=0.5)
+            plyer.notification.notify(title="title", message="msg")
             print("success")
 
             # define client
