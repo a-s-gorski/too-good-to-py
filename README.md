@@ -11,12 +11,12 @@
 
 ## Instruction
 
-##### Write your parameters in textfields
-##### Press "set Params" button
-##### Write login and password
-##### Press login
-##### If everything is correct and you have working internet connection
-##### Soon you will see top 10 most suitable offer for you
+* Write your parameters in textfields
+* Press "set Params" button
+* Write login and password
+* Press login
+* If everything is correct and you have working internet connection
+* Soon you will see top 10 most suitable offer for you
 
 ### Requirements
 
@@ -29,6 +29,6 @@
 
 ### Plans for future
 
-##### introduce background services and notification
-##### better GUI
-##### more custimization, remote services(?)
+* introduce background services and notification
+* better GUI
+* more custimization, remote services(?)
