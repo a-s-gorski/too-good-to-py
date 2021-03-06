@@ -67,7 +67,6 @@ class OfferCommand:
         self.address = item['pickup_location']['address']['address_line']
         self.shop = item['store']['store_name']
 
-
     def getPrice(self):
         return self.price
 
@@ -92,15 +91,12 @@ class OfferCommand:
     def getShop(self):
         return self.shop
 
-    # def getPurchaseEnd(self):
-    #     return self.purchase_end
-
     def getMinutesLeft(self):
         (self.purchase_end - datetime.datetime.now()).total_seconds() / 60
 
     def getOffer(self, user):
-
-        offer_result = [self.getDistance(user.getLocation()), self.getShop(), self.getPrice(), self.getAddress(), self.getName()]
+        offer_result = [self.getDistance(user.getLocation()), self.getShop(), self.getPrice(), self.getAddress(),
+                        self.getName()]
         return offer_result
 
 
@@ -144,9 +140,6 @@ class OfferSelector:
 
     def check_offer(self, offer):
         try:
-            # if not self.check_max_distance(offer):
-            #     print("a")
-            #     return False
 
             if not self.check_max_price(offer):
                 print("b")
@@ -156,7 +149,6 @@ class OfferSelector:
                 return False
             return True
         except:
-            print("ERROR or something, idk")
             return False
 
     def select_offers(self, user):
@@ -266,8 +258,6 @@ class MainScreen(GridLayout):
         self.NameLabel = Label(text="name")
 
         self.create_gui()
-        # self.update_offers([["10", "ikea", "10", "10", "10"], ["100", "tyskie", "123", "34", "6"],
-        #                     []])  # example how to use update offers
 
     def add_login_widgets(self):
         self.add_widget(self.loginLabel)
@@ -348,7 +338,6 @@ class MainScreen(GridLayout):
             try:
                 latitude_input = float(latitude_input)
                 self.latitude = latitude_input
-                # self.LatitudeDisplay.text = self.latitude
             except ValueError:
                 pass
         if 0 < len(longitude_input) < 10:
@@ -393,17 +382,12 @@ class MainScreen(GridLayout):
             self.login = self.loginTextInput.text
             self.password = self.passwordTextInput.text
             current_user = User(str(self.login), str(self.password), float(self.latitude), float(self.longitude), 10000)
-            print(current_user.login)
-            print(current_user.password)
             offer_selector = OfferSelector()
             offer_selector.select_offers(current_user)
             offers_to_display = offer_selector.get_selected_offers(current_user)
-            # print(offers_to_display[0])
-            # print(len(offers_to_display))
             new_offers_list = [offer for offer in offers_to_display if len(offer) == 5]
-            new_offers_list = sorted(new_offers_list, key=lambda x:x[0])
+            new_offers_list = sorted(new_offers_list, key=lambda x: x[0])
             self.update_offers(new_offers_list)
-
 
         except Exception as e:  # add custom tgtgApiException
             print(e)
