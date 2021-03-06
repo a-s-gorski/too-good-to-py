@@ -21,6 +21,7 @@
 ### Requirements
 
 ##### kivy, buildozer, python>=3.6, plyer, jnius
+##### tgtg - https://github.com/ahivert/tgtg-python
 
 ### Warning
 
