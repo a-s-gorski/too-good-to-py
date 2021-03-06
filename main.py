@@ -1,6 +1,5 @@
-
 import kivy
-#import jnius
+# import jnius
 # import android
 import plyer
 import oscpy
@@ -47,7 +46,7 @@ class User:
                     longitude=self.longtitude + y, radius=1000))
         # print(items[0])
 
-        print("items")
+        print("first_imported_items")
         print(len(items))
 
         return items
@@ -62,6 +61,8 @@ class OfferCommand:
         self.offer_name = item['item']['name']
         self.offer_desc = item['item']['description']
         self.items_available = item['items_available']
+        self.address = None
+        self.shop = None
 
         # purchase_end_time = item['purchase_end']
         # purchase_end_time = ''.join(
@@ -89,11 +90,25 @@ class OfferCommand:
     def getDescription(self):
         return self.offer_desc
 
+    def getAddress(self):
+        return self.address
+
+    def getShop(self):
+        return self.shop
+
     # def getPurchaseEnd(self):
     #     return self.purchase_end
 
     def getMinutesLeft(self):
         (self.purchase_end - datetime.datetime.now()).total_seconds() / 60
+
+    def getOffer(self):
+        offer_result = []
+        offer_result.append(self.getDistance())
+        offer_result.append(self.getName())
+        offer_result.append(self.getPrice())
+        offer_result.append(self.getAddr())
+        offer_result.append(self.getName())
 
 
 class OfferSelector:
@@ -136,13 +151,17 @@ class OfferSelector:
 
     def check_offer(self, offer):
         try:
-            if not self.check_max_distance(offer):
-                return False
+            # if not self.check_max_distance(offer):
+            #     print("a")
+            #     return False
+
             if not self.check_max_price(offer):
+                print("b")
                 return False
             if not self.check_items_available(offer):
+                print("c")
                 return False
-            return self.search_patterns(offer)
+            return True
         except:
             print("ERROR or something, idk")
             return False
@@ -155,11 +174,11 @@ class OfferSelector:
             offer = OfferCommand(item)
             if self.check_offer(offer):
                 self.selected_offers.append(offer)
-                # print(offer.getDistance(current_location=self.location))
+                print(offer.getDistance(current_location=self.location))
+        print("----", len(self.selected_offers))
 
     def get_selected_offers(self):
         return self.selected_offers
-
 
 
 # activity_port = 3001      for future development of background services
@@ -180,8 +199,7 @@ class MainScreen(GridLayout):
         # osc.bind(sock, self.some_api_callback, '/some_api')
         # Clock.schedule_interval(lambda *x: osc.readQueue(sock), 0)
 
-
-        self.service = None
+        # self.service = None
         self.cols = 6
         self.login = StringProperty()
         self.password = StringProperty()
@@ -280,7 +298,8 @@ class MainScreen(GridLayout):
         for i in range(3):
             self.add_widget(Label())
         self.add_widget(self.LongitudeLabel)
-        self.add_widget(self.LongitudeTextFiled) 
+        self.add_widget(self.LongitudeTextFiled)
+        self.add_widget(self.LongitudeDisplay)
         for i in range(3):
             self.add_widget(Label())
         self.add_widget(self.MaxPriceLabel)
@@ -357,13 +376,13 @@ class MainScreen(GridLayout):
                 self.MaxDistanceDisplay.text = str(self.max_distance)
             except ValueError:
                 pass
-        if 0 < len(search_patterns_input) < 100:
+        if 0 <= len(search_patterns_input) < 100:
             try:
                 search_patterns_test = search_patterns_input.split(",")
                 self.searched_patterns = search_patterns_input
                 self.SearchPatternsDisplay.text = str(self.searched_patterns)
             except Exception:
-                pass
+                self.searched_patterns = ""
 
     def update_offers(self, offers):
         for counter, offer in enumerate(offers):
@@ -375,24 +394,27 @@ class MainScreen(GridLayout):
     def login_button_pressed(self, btn):  # right now nothing more than skeleton for the future
         try:
             self.loginStatusDisplay.text = "True"
+            self.login = self.loginTextInput.text
+            self.password = self.passwordTextInput.text
             current_user = User(str(self.login), str(self.password), float(self.latitude), float(self.longitude), 10000)
+            print(current_user.login)
+            print(current_user.password)
             offer_selector = OfferSelector()
-            selected_offers = offer_selector.select_offers(current_user)
+            offer_selector.select_offers(current_user)
+            selected_offers = offer_selector.get_selected_offers()
             print(selected_offers)
 
-        except Exception:  # add custom tgtgApiException
+
+        except Exception as e:  # add custom tgtgApiException
+            print(e)
             self.loginStatusDisplay.text = "False"
             print("failure")
 
     # def some_api_callback(self, message, *args):
     #     return
 
-
-
     # def ping(self):
     #     osc.sendMsg('/some_api', ['ping', ], port=someotherport)
-
-
 
 
 class MyApp(App):
