@@ -2,6 +2,7 @@
 import kivy
 import jnius
 import plyer
+import oscpy
 from kivy.app import App
 from kivy.properties import StringProperty
 from kivy.uix.button import Button
