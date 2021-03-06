@@ -236,11 +236,11 @@ class MainScreen(GridLayout):
         self.DisplayParams = Label(text="params ")
 
         self.LatitudeLabel = Label(text="lat.")
-        self.LatitudeTextField = TextInput(text="lat")
+        self.LatitudeTextField = TextInput(text="")
         self.LatitudeDisplay = Label(text=self.latitude)
 
         self.LongitudeLabel = Label(text="long.")
-        self.LongitudeTextFiled = TextInput(text="long")
+        self.LongitudeTextFiled = TextInput(text="")
         self.LongitudeDisplay = Label(text=self.longitude)
 
         self.MaxPriceLabel = Label(text="max \n price")
