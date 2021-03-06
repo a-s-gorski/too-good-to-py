@@ -11,24 +11,24 @@
 
 ## Instruction
 
-#### Write your parameters in textfields
-#### Press "set Params" button
-#### Write login and password
-#### Press login
-#### If everything is correct and you have working internet connection
-#### Soon you will see top 10 most suitable offer for you
+##### Write your parameters in textfields
+##### Press "set Params" button
+##### Write login and password
+##### Press login
+##### If everything is correct and you have working internet connection
+##### Soon you will see top 10 most suitable offer for you
 
-## Requirements
+### Requirements
 
-#### kivy, buildozer, python>=3.6, plyer, jnius
+##### kivy, buildozer, python>=3.6, plyer, jnius
 
-## Warning
+### Warning
 
-#### still in early development, using third-party api for tgtg
-#### use at your own risk
+##### still in early development, using third-party api for tgtg
+##### use at your own risk
 
-## Plans for future
+### Plans for future
 
-#### introduce background services and notification
-#### better GUI
-#### more custimization, remote services(?)
+##### introduce background services and notification
+##### better GUI
+##### more custimization, remote services(?)
