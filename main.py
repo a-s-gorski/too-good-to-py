@@ -205,8 +205,8 @@ class MainScreen(GridLayout):
         self.max_distance = StringProperty()
         self.searched_patterns = StringProperty()
 
-        self.login = "adamsebastiangorski@gmail.com"
-        self.password = "cotomoisa1"
+        self.login = ""
+        self.password = ""
         self.latitude = str(52.23)
         self.longitude = str(21.01)
         self.max_price = str(100)
@@ -266,8 +266,8 @@ class MainScreen(GridLayout):
         self.NameLabel = Label(text="name")
 
         self.create_gui()
-        self.update_offers([["10", "ikea", "10", "10", "10"], ["100", "tyskie", "123", "34", "6"],
-                            []])  # example how to use update offers
+        # self.update_offers([["10", "ikea", "10", "10", "10"], ["100", "tyskie", "123", "34", "6"],
+        #                     []])  # example how to use update offers
 
     def add_login_widgets(self):
         self.add_widget(self.loginLabel)
@@ -385,7 +385,7 @@ class MainScreen(GridLayout):
             if counter >= 10 or len(offer) != 5:
                 continue
             for i in range(1, 6):
-                self.Offers[counter][i].text = str(offer[i - 1])[:10]
+                self.Offers[counter][i].text = str(offer[i - 1])[:6]
 
     def login_button_pressed(self, btn):  # right now nothing more than skeleton for the future
         try:
