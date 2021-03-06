@@ -1,8 +1,11 @@
 
 import kivy
-import jnius
+#import jnius
+# import android
 import plyer
 import oscpy
+from oscpy.server import OSCThreadServer
+from time import sleep
 from kivy.app import App
 from kivy.properties import StringProperty
 from kivy.uix.button import Button
@@ -16,13 +19,29 @@ from kivy.uix.textinput import TextInput
 import tgtg
 import requests
 import haversine
+from kivy.utils import platform
+from kivy.clock import Clock
+
+activity_port = 3001
+service_port = 3000
 
 
 
 class MainScreen(GridLayout):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
+        if platform=='android':
+            from android import AndroidService
+            service = AndroidService('my pong service', 'running')
+            service.start('service started')
+            self.service = service
+        osc = OSCThreadServer()
+        sock = osc.listen(address='127.0.0.1', port=activity_port)
+        osc.bind(sock, self.some_api_callback, '/some_api')
+        Clock.schedule_interval(lambda *x: osc.readQueue(sock), 0)
 
+
+        self.service = None
         self.cols = 6
         self.login = StringProperty()
         self.password = StringProperty()
@@ -228,6 +247,15 @@ class MainScreen(GridLayout):
         except Exception:  # add custom tgtgApiException
             self.loginStatusDisplay.text = "False"
             print("failure")
+
+    def some_api_callback(self, message, *args):
+        return
+
+
+
+    def ping(self):
+        osc.sendMsg('/some_api', ['ping', ], port=someotherport)
+
 
 
 
